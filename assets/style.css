@@ -1,0 +1,14 @@
+.today {
+    border: 1px;
+    background-color: rgb(229, 230, 198);
+
+  }
+  
+.forecast {
+    background-color: rgb(107, 112, 212);
+    display: flex;
+    flex-wrap: wrap;
+    flex: 3;
+    margin: 3px;
+    padding: 5px;
+  }
