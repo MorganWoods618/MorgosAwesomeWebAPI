@@ -1,7 +1,28 @@
+var historyArray = JSON.parse(localStorage.getItem("City")) || []
+
+//search button
 $("#search-button").on("click", function () {
+    $("#todayweather").empty()
+    $("#fiveforecast").empty()
     var inputValue = $("#search-value").val()
     console.log(inputValue)
     geoCode(inputValue)
+    historyArray.push(inputValue)
+    //local storage
+    localStorage.setItem("City", JSON.stringify(historyArray));
+    localStorage.getItem("City");
+    var cityButton = $("<button>").addClass("btn btn-info").text(inputValue)
+    $("#history-storage").append(cityButton)
+})
+
+for (var i = 0; i < historyArray.length; i++) {
+    var cityButton = $("<button>").addClass("btn btn-info").text(historyArray[i])
+//add click event or event listener to the city button var that will attach to each button which fires the geocode function based on button city value
+    $("#history-storage").append(cityButton)
+}
+//history button
+$("#history-storage").on("click", function () {
+    localStorage.getItem("City");
 })
 
 function geoCode(cityName) {
@@ -14,21 +35,37 @@ function geoCode(cityName) {
         })
 }
 
+$("#btn-info").val(localStorage.getItem("city"));
+
 //current
 function getCurrentWeather(lat, lon) {
-    fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&exclude=hourly&appid=6ca3b3921f05e6965220c35abefb7227`)
+    fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&units=imperial&exclude=hourly,minutely,daily&appid=6ca3b3921f05e6965220c35abefb7227`)
         .then(response => response.json())
         .then(data => {
             console.log(data)
+            // var historyArray = JSON.parse(localStorage.getItem("City"))||[]
             var weatherCard = $("<div>").addClass("today")
             weatherCard.attr('class', 'today');
-            var temp = $("<h4>").text("Temperature: " + data.main.temp + "°F")
-            var cityName = $("<h3>").text(data.name)
-            var humidity = $("<h4>").text("Humidity: " + data.main.humidity + "%")
-            var wind = $("<h4>").text("Wind: " + data.wind.speed + " MPH")
-            var icon =$("<h4>").text(data.weather[0].icon)
-            var today = moment().format('L');
-            weatherCard.append(cityName, today, temp, humidity, wind, icon)
+            var temp = $("<div>").text("Temp: " + data.current.temp + "°F")
+            var cityStored = JSON.parse(localStorage.getItem("City"))
+            console.log(cityStored)
+            var humidity = $("<div>").text("Humidity: " + data.current.humidity + "%")
+            var wind = $("<div>").text("Wind: " + data.current.wind_speed + " MPH")
+            var uvIndex = $("<button>").text("UV Index: " + data.current.uvi)
+            if (data.current.uvi < 3) {
+                uvIndex.addClass("btn-success")
+            }
+            else if(data.current.uvi > 3 && data.current.uvi < 5){
+                uvIndex.addClass("btn-warning")
+
+            }
+            else {
+                uvIndex.addClass("btn-danger")
+            }
+
+            var date = moment().format(' l');
+            var icon = $("<img>").attr("src", "http://openweathermap.org/img/w/" + data.current.weather[0].icon + ".png")
+            weatherCard.append(cityStored, date, icon, temp, humidity, wind, uvIndex)
             $("#todayweather").append(weatherCard)
         })
 }
@@ -36,21 +73,20 @@ function getCurrentWeather(lat, lon) {
 
 //5 day
 function getForecast(lat, lon) {
-    fetch(`http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&cnt=6&appid=6ca3b3921f05e6965220c35abefb7227`)
+    fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&units=imperial&exclude=hourly,minutely,current&appid=6ca3b3921f05e6965220c35abefb7227`)
         .then(response => response.json())
         .then(data => {
             console.log(data)
-            for (var i = 1; i < data.list.length; i++) {
+            for (var i = 0; i < 5; i++) {
                 var weatherCard = $("<div>").addClass("card forecast")
-                var date = $("<h4>").text(data.list[i].dt_txt)
-                var temp = $("<p>").text("Temperature: " + data.list[i].main.temp + "°F")
-                var humidity = $("<p>").text("Humidity: " + data.list[i].main.humidity + "%")
-                var wind = $("<p>").text("Wind: " + data.list[i].wind.speed + " MPH")
-                weatherCard.append(date, temp, humidity, wind)
+                var date = $("<div>").text(moment.unix(data.daily[i].dt).format("MM/DD/YY"))
+                var temp = $("<div>").text("Temp: " + data.daily[i].temp.max + "°F")
+                var humidity = $("<div>").text("Humidity: " + data.daily[i].humidity + "%")
+                var wind = $("<div>").text("Wind: " + data.daily[i].wind_speed + " MPH")
+                var icon = $("<img>").attr("src", "http://openweathermap.org/img/w/" + data.daily[i].weather[0].icon + ".png")
+                weatherCard.append(date, icon, temp, humidity, wind)
                 $("#fiveforecast").append(weatherCard)
-                // $("#Day-1").append(weatherCard[0])
             }
         })
 }
-
 
