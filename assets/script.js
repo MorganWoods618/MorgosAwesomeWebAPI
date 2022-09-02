@@ -15,6 +15,13 @@ $("#search-button").on("click", function () {
     $("#history-storage").append(cityButton)
 })
 
+//clear history
+$("#clear-search").on("click", function () {
+    localStorage.clear();
+    location.reload();
+}
+)
+
 for (var i = 0; i < historyArray.length; i++) {
     var cityButton = $("<button>").addClass("btn btn-info").text(historyArray[i])
 //add click event or event listener to the city button var that will attach to each button which fires the geocode function based on button city value
@@ -23,6 +30,11 @@ for (var i = 0; i < historyArray.length; i++) {
 //history button
 $("#history-storage").on("click", function () {
     localStorage.getItem("City");
+
+    // cityButton.on("click", geoCode () {
+
+    // }
+    // )
 })
 
 function geoCode(cityName) {
@@ -65,6 +77,7 @@ function getCurrentWeather(lat, lon) {
 
             var date = moment().format(' l');
             var icon = $("<img>").attr("src", "http://openweathermap.org/img/w/" + data.current.weather[0].icon + ".png")
+            icon.attr('class', 'icon')
             weatherCard.append(cityStored, date, icon, temp, humidity, wind, uvIndex)
             $("#todayweather").append(weatherCard)
         })
@@ -77,13 +90,14 @@ function getForecast(lat, lon) {
         .then(response => response.json())
         .then(data => {
             console.log(data)
-            for (var i = 0; i < 5; i++) {
+            for (var i = 1; i < 6; i++) {
                 var weatherCard = $("<div>").addClass("card forecast")
                 var date = $("<div>").text(moment.unix(data.daily[i].dt).format("MM/DD/YY"))
                 var temp = $("<div>").text("Temp: " + data.daily[i].temp.max + "°F")
                 var humidity = $("<div>").text("Humidity: " + data.daily[i].humidity + "%")
                 var wind = $("<div>").text("Wind: " + data.daily[i].wind_speed + " MPH")
                 var icon = $("<img>").attr("src", "http://openweathermap.org/img/w/" + data.daily[i].weather[0].icon + ".png")
+                icon.attr('class', 'icon-large')
                 weatherCard.append(date, icon, temp, humidity, wind)
                 $("#fiveforecast").append(weatherCard)
             }

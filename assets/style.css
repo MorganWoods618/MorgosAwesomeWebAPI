@@ -30,3 +30,7 @@
 .help {
     font-size: 100px;
 }
+
+.icon-large {
+  width:max-content;
+}
