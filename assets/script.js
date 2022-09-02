@@ -24,17 +24,12 @@ $("#clear-search").on("click", function () {
 
 for (var i = 0; i < historyArray.length; i++) {
     var cityButton = $("<button>").addClass("btn btn-info").text(historyArray[i])
-//add click event or event listener to the city button var that will attach to each button which fires the geocode function based on button city value
+    //note for future updates on getting the city buttons to work: need to add click event or event listener to the city button var that will attach to each button which fires the geocode function based on button city value
     $("#history-storage").append(cityButton)
 }
 //history button
 $("#history-storage").on("click", function () {
     localStorage.getItem("City");
-
-    // cityButton.on("click", geoCode () {
-
-    // }
-    // )
 })
 
 function geoCode(cityName) {
@@ -55,7 +50,6 @@ function getCurrentWeather(lat, lon) {
         .then(response => response.json())
         .then(data => {
             console.log(data)
-            // var historyArray = JSON.parse(localStorage.getItem("City"))||[]
             var weatherCard = $("<div>").addClass("today")
             weatherCard.attr('class', 'today');
             var temp = $("<div>").text("Temp: " + data.current.temp + "°F")
